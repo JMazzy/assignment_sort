@@ -51,47 +51,50 @@ def bubble_sort(array)
   array
 end
 
-def merge(sub_array1,sub_array2)
-  # pop off elements from sub_arrays until they are length 0
-    # Compare sub_array1[0] with sub_array2[0]
-    # if sub_array1[0] is smaller add to new_array, otherwise use other
-  new_array = []
-
-  until sub_array1.length == 0 || sub_array2.length == 0
-    #binding.pry
-    if sub_array1[0] < sub_array2[0]
-      new_array << sub_array1.shift
-    else
-      new_array << sub_array2.shift
-    end
-  end
-
-  unless sub_array1
-    new_array + sub_array1
+def merge(left,right)
+  # return right if left empty and vice versa
+  if left.empty?
+    right
+  elsif right.empty?
+    left
+  # recursively break arrays until one is empty
+  elsif left[0] < right[0]
+    [left[0]] + merge(left[1...left.length],right)
   else
-    new_array + sub_array2
+    [right[0]] + merge(left,right[1...right.length])
   end
-  new_array
 end
 
 def merge_sort(array)
+  # base case
+  return array if array.length <= 1
 
-  return array if array.length ==  1 
-  half = array.length/2
-  if array.length > 2
-    array_left = array[0..half]
-    array_right = array[half + 1..array.length - 1]
+  # Split array in half at the middle
+  left_upper_bound = right_lower_bound = array.length/2
+
+  if array.length.even?
+    left_upper_bound -= 1
   else
-    array_left = [array[0]]
-    array_right = [array[1]]
+    right_lower_bound += 1
   end
 
-  new_array =  merge(merge_sort(array_left),merge_sort(array_right))
+  # recursively call merge_sort on sub-arrays until they reach base case
+  array_left = merge_sort(array[0..left_upper_bound])
+  array_right = merge_sort(array[right_lower_bound...array.length]) # why does it work multiple ways? (off-by one error correction?)
 
- 
-# Split array in half until sub-array length is 1
-# merge into groups that are sorted
+  # merge the halves back together
+  merge(array_left,array_right)
 
+  # Why oh why don't I work?? VVV
+ #  return array if array.length ==  1
+ #  half = array.length/2
+ #  if array.length > 2
+ #   array_left = array[0..half]
+ #   array_right = array[half + 1..array.length - 1]
+ #  else
+ #   array_left = [array[0]]
+ #   array_right = [array[1]]
+ #  end
 end
 
-puts merge_sort([1,3,7,2,5,8,9,2,3,4])
+puts merge_sort([1,3,7,-2,0,5,8,-9,2,3,4])
